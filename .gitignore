@@ -1,0 +1,9 @@
+*.bin
+*.sh
+*.json
+*.dat
+*.webp
+*.txt
+*.html
+__pycache__
+backup
