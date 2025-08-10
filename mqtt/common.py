@@ -9,6 +9,10 @@ from wifimgr import (
     wlan_sta,
     get_connection,
     )
+from batt import (
+    get_voltage,
+    get_level,
+    )
 
 
 with open('broker.dat') as f:
@@ -21,7 +25,9 @@ messages = dict(ids=[])
 broker_connection = dict(waktu_gagal=None)
 
 
-def base_main(topic, on_response, on_subscribed=None, on_broker_failure=None):
+def base_main(
+        topic, on_response, on_subscribed=None, on_broker_failure=None,
+        on_batt=None):
     wlan = get_connection()
     if wlan is None:
         print('Gagal terhubung ke jaringan.')
@@ -89,5 +95,8 @@ def base_main(topic, on_response, on_subscribed=None, on_broker_failure=None):
             else:
                 titik = '..'
                 flip = True
+            voltage = get_voltage()
+            level = get_level(voltage)
+            on_batt and on_batt(voltage, level)
             print('Menunggu ' + titik)
             sleep(1)  # Agar CPU lebih nyaman

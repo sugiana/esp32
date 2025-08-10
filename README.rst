@@ -67,8 +67,8 @@ mengisi handphone yang ditancapkan ke laptop sudah cukup untuk
 menghidupkannya.
 
 
-Jenis Colokan
--------------
+Jenis Colokan Baterai
+---------------------
 
 ESP32 dan baterai tadi memiliki colokan / *connector*. Bila berbeda maka mudahnya
 potong saja kabel pada baterai lalu **solder** ke papan ESP32.
@@ -103,6 +103,42 @@ pada tautan tadi konektornya berciri:
     3. Jumlah pin: 2
 
 Di toko online cari dengan kata kunci ``jst gh``.
+
+
+Sakelar Baterai
+---------------
+
+Meski sudah ada colokan yang bisa dilepas-pasang sebaiknya kita tetap memasang
+`sakelar <https://tokopedia.com/elektronikdr/saklar-switch-on-off-mini-2p-2-pin-2-kaki-kecil-banget>`_
+sehingga semakin memudahkan pengoperasian terutama saat membutuhkan prosedur
+*reset*. Pilih yang tidak ada lampunya guna menghemat baterai.
+
+Standarnya dipasang di kutub negatif baterai::
+
+  Batt                Colokan
+  (-) --- Sakelar --- (-)
+
+
+Pengukuran Tegangan Baterai
+---------------------------
+
+Untuk mengukur berapa persen baterai tersisa berarti mengukur tegangannya.
+Tegangan yang akan diukur dihubungkan ke pin 34 sebagai salah satu pin ADC
+(Analog to Digital Converter). Namun pin ini hanya bisa menerima tegangan
+maksimal 3,3V. Sedangkan tegangan maksimal baterai mencapai 4,2V. Itu
+artinya kita perlu **pembagi tegangan** menggunakan dua resistor yang nilainya
+sama. Kita bisa gunakan
+`resistor 47k Ohm 0,25W <https://www.tokopedia.com/pcm-elektronik-pusat/resistor-0-25-watt-5-47k-ohm>`_.
+
+Rangkai keduanya menjadi seperti ini::
+
+  Batt                            Batt
+  (+) --- 47k Ohm --- 47k Ohm --- (-)
+                   |
+                 Pin 34
+
+Kapan ini digunakan ? Nanti saat kita membuat *kotak bersuara* yang akan
+mengatakan "baterai perlu diisi" saat kapasitasnya di bawah 20%.
 
 
 Lampu Daya
@@ -536,6 +572,7 @@ Selanjutnya unggah file itu::
 
 Juga script subscriber::
 
+    $ ~/env/bin/ampy -p /dev/ttyUSB0 mqtt/batt.py
     $ ~/env/bin/ampy -p /dev/ttyUSB0 mqtt/common.py
     $ ~/env/bin/ampy -p /dev/ttyUSB0 mqtt/main.py
 
@@ -738,10 +775,10 @@ Lalu jalankan publisher-nya::
     
 hasilnya::
 
-    Sudah terhubung ke MQTT broker warga.web.id:1883.
-    Subscribe ke topik pengucapan/3c71bf4268e0/response
+    Sudah terhubung ke MQTT broker localhost:1883.
+    Subscribe ke topik pengucapan/cac20c5871dcc/response
     Publish {'message': 'nomor antrian tujuh belas di loket b', 'id': '222945'} dengan topik pengucapan/3c71bf4268e0
-    Diterima {'code': 0, 'id': '222945', 'message': 'OK'} dari topik pengucapan/3c71bf4268e0/response
+    Diterima {'code': 0, 'id': '222945', 'message': 'OK'} dari topik pengucapan/cac20c5871dcc/response
 
 Ujilah dengan berbagai kondisi seperti:
 
@@ -762,3 +799,4 @@ Referensi
 * `problems with network.WLAN.connect in v1.24.0 and 1.23.0 <https://github.com/orgs/micropython/discussions/16089>`_
 * `Gemini <https://gemini.google.com>`_
 * `ESP32 WeMos LOLIN32 Lite high resolution pinout and specs <https://mischianti.org/esp32-wemos-lolin32-lite-high-resolution-pinout-and-specs/>`_
+* `ESP32 – Getting Battery charging level <https://www.pangodream.es/esp32-getting-battery-charging-level>`_
